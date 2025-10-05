@@ -25,15 +25,3 @@ pub const Shape = union(enum) {
     rectangle: Rectangle,
     square: Square,
 };
-
-pub fn square(side: f32) Shape {
-    return Shape{ .square = Square{ .side = side } };
-}
-
-pub fn circle(radius: f32) Shape {
-    return Shape{ .circle = Circle{ .radius = radius } };
-}
-
-pub fn rectangle(width: f32, height: f32) Shape {
-    return Shape{ .rectangle = Rectangle{ .width = width, .height = height } };
-}

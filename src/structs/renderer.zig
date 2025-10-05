@@ -1,27 +1,33 @@
 const std = @import("std");
-const tf = @import("transform.zig");
+const t = @import("transform.zig");
 const c = @import("../lib/c.zig").c;
 const s = @import("shape.zig");
 
-pub const ShapeRenderer2D = struct {
-    transform: tf.Transform2D = .{ .x = 0, .y = 0, .rotation = 0 },
-    shape: s.Shape,
+pub fn ShapeRenderer(comptime ShapeType: type) type {
+    return struct {
+        transform: t.Transform2D = .{},
+        shape: ShapeType,
 
-    pub fn render(self: ShapeRenderer2D, renderer: *c.struct_SDL_Renderer) void {
-        switch (self.shape) {
-            .circle => std.debug.print("circle\n", .{}),
-            .square => |sq| {
-                var square = c.SDL_FRect{
+        pub fn render(self: @This(), renderer: *c.SDL_Renderer) void {
+            if (ShapeType == s.Square) {
+                const rect = c.SDL_FRect{
                     .x = self.transform.x,
                     .y = self.transform.y,
-                    .w = sq.side,
-                    .h = sq.side,
+                    .w = self.shape.side,
+                    .h = self.shape.side,
                 };
-
                 _ = c.SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-                _ = c.SDL_RenderFillRect(renderer, &square);
-            },
-            .rectangle => std.debug.print("rectangle\n", .{}),
+                _ = c.SDL_RenderFillRect(renderer, &rect);
+            } else if (ShapeType == s.Rectangle) {
+                const rect = c.SDL_FRect{
+                    .x = self.transform.x,
+                    .y = self.transform.y,
+                    .w = self.shape.width,
+                    .h = self.shape.height,
+                };
+                _ = c.SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+                _ = c.SDL_RenderFillRect(renderer, &rect);
+            }
         }
-    }
-};
+    };
+}

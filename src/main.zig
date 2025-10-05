@@ -28,7 +28,8 @@ pub fn main() !void {
     };
     defer c.SDL_DestroyRenderer(renderer);
 
-    var square = r.ShapeRenderer2D{ .shape = s.square(200) };
+    var square = r.ShapeRenderer(s.Square){ .shape = .{ .side = 200 } };
+    var rect = r.ShapeRenderer(s.Rectangle){ .shape = .{ .width = 100, .height = 200 }, .transform = .{ .x = 300, .y = 300 } };
 
     var last_time = c.SDL_GetPerformanceCounter();
     const perf_frequency = @as(f64, @floatFromInt(c.SDL_GetPerformanceFrequency()));
@@ -47,6 +48,7 @@ pub fn main() !void {
         _ = c.SDL_RenderClear(renderer);
 
         square.render(renderer);
+        rect.render(renderer);
 
         _ = c.SDL_RenderPresent(renderer);
 

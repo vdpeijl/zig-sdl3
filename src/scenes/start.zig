@@ -20,6 +20,10 @@ pub const StartScene = struct {
     }
 
     pub fn render(self: *StartScene, renderer: *c.SDL_Renderer) void {
+        // Clear the screen each frame (purple background)
+        _ = c.SDL_SetRenderDrawColor(renderer, 100, 0, 200, 255);
+        _ = c.SDL_RenderClear(renderer);
+
         self.square.render(renderer);
     }
 };

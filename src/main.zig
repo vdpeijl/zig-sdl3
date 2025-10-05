@@ -43,11 +43,6 @@ pub fn main() !void {
         std.debug.print("Delta: {d:.4}s FPS: {d:.1}\n", .{ delta, 1.0 / delta });
 
         start_scene.update(delta);
-
-        // Clear the screen each frame (black background)
-        _ = c.SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        _ = c.SDL_RenderClear(renderer);
-
         start_scene.render(renderer);
 
         _ = c.SDL_RenderPresent(renderer);

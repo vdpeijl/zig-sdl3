@@ -20,7 +20,6 @@ pub const ShapeRenderer2D = struct {
 
                 _ = c.SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
                 _ = c.SDL_RenderFillRect(renderer, &square);
-                _ = c.SDL_RenderPresent(renderer);
             },
             .rectangle => std.debug.print("rectangle\n", .{}),
         }

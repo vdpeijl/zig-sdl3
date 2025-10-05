@@ -32,13 +32,18 @@ pub fn main() !void {
     };
     defer c.SDL_DestroyRenderer(renderer);
 
+    var square = r.ShapeRenderer2D{ .shape = s.Shape{ .square = .{ .side = 200 } } };
+
     // Simple event loop
     var running = true;
     while (running) {
-        c.SDL_Delay(16); // ~60 FPS
+        // Clear the screen each frame (black background)
+        _ = c.SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        _ = c.SDL_RenderClear(renderer);
 
-        var square = r.ShapeRenderer2D{ .shape = s.Shape{ .square = .{ .side = 200 } } };
         square.render(renderer);
+
+        _ = c.SDL_RenderPresent(renderer);
 
         std.debug.print("{any}\n", .{square});
 
@@ -55,8 +60,20 @@ pub fn main() !void {
                     running = false;
                 }
 
+                if (event.key.key == c.SDLK_D) {
+                    square.transform.x += 5;
+                }
+
+                if (event.key.key == c.SDLK_A) {
+                    square.transform.x -= 5;
+                }
+
                 if (event.key.key == c.SDLK_W) {
-                    square.transform.x += 1;
+                    square.transform.y -= 5;
+                }
+
+                if (event.key.key == c.SDLK_S) {
+                    square.transform.y += 5;
                 }
             }
         }

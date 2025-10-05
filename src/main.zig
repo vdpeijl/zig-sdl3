@@ -1,11 +1,8 @@
 const std = @import("std");
 const sdl = @import("util/sdl.zig");
-const r = @import("structs/renderer.zig");
 const c = @import("lib/c.zig").c;
 const s = @import("structs/shape.zig");
-const startScene = @import("scenes/start.zig");
-const Scene = @import("util/scene.zig").Scene;
-const SceneName = @import("util/scene.zig").SceneName;
+const StartScene = @import("scenes/start.zig").StartScene;
 
 pub fn main() !void {
     if (!c.SDL_Init(c.SDL_INIT_VIDEO)) {
@@ -13,10 +10,6 @@ pub fn main() !void {
     }
 
     defer c.SDL_Quit();
-
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
-    const allocator = gpa.allocator();
 
     const window = c.SDL_CreateWindow(
         "Hello SDL3",
@@ -35,9 +28,7 @@ pub fn main() !void {
     };
     defer c.SDL_DestroyRenderer(renderer);
 
-    var s_start = Scene.init(allocator, SceneName.main_menu);
-    defer s_start.deinit();
-    try startScene.init(&s_start);
+    var start_scene = try StartScene.init();
 
     var last_time = c.SDL_GetPerformanceCounter();
     const perf_frequency = @as(f64, @floatFromInt(c.SDL_GetPerformanceFrequency()));
@@ -51,11 +42,13 @@ pub fn main() !void {
 
         std.debug.print("Delta: {d:.4}s FPS: {d:.1}\n", .{ delta, 1.0 / delta });
 
+        start_scene.update(delta);
+
         // Clear the screen each frame (black background)
         _ = c.SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         _ = c.SDL_RenderClear(renderer);
 
-        s_start.render(renderer);
+        start_scene.render(renderer);
 
         _ = c.SDL_RenderPresent(renderer);
 

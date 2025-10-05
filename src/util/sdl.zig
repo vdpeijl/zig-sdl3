@@ -1,7 +1,5 @@
 const std = @import("std");
-const c = @cImport({
-    @cInclude("SDL3/SDL.h");
-});
+const c = @import("../lib/c.zig").c;
 
 pub fn get_bounds() !c.SDL_Rect {
     const primary_display = c.SDL_GetPrimaryDisplay();

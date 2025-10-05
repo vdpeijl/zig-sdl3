@@ -10,12 +10,12 @@ pub const ShapeRenderer2D = struct {
     pub fn render(self: ShapeRenderer2D, renderer: *c.struct_SDL_Renderer) void {
         switch (self.shape) {
             .circle => std.debug.print("circle\n", .{}),
-            .square => {
+            .square => |sq| {
                 var square = c.SDL_FRect{
                     .x = self.transform.x,
                     .y = self.transform.y,
-                    .w = self.shape.square.?.side,
-                    .h = self.shape.square.?.side,
+                    .w = sq.side,
+                    .h = sq.side,
                 };
 
                 _ = c.SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);

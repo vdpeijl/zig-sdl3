@@ -4,9 +4,6 @@ const r = @import("structs/renderer.zig");
 const c = @import("lib/c.zig").c;
 const s = @import("structs/shape.zig");
 
-const WINDOW_WIDTH: c_int = 800;
-const WINDOW_HEIGHT: c_int = 600;
-
 pub fn main() !void {
     if (!c.SDL_Init(c.SDL_INIT_VIDEO)) {
         std.debug.print("SDL_Init failed: {s}\n", .{c.SDL_GetError()});
@@ -14,11 +11,10 @@ pub fn main() !void {
 
     defer c.SDL_Quit();
 
-    // const bounds = try sdl.get_bounds();
     const window = c.SDL_CreateWindow(
         "Hello SDL3",
-        WINDOW_WIDTH,
-        WINDOW_HEIGHT,
+        800,
+        600,
         c.SDL_WINDOW_RESIZABLE,
     ) orelse {
         std.debug.print("SDL_CreateWindow failed: {s}\n", .{c.SDL_GetError()});
@@ -32,11 +28,20 @@ pub fn main() !void {
     };
     defer c.SDL_DestroyRenderer(renderer);
 
-    var square = r.ShapeRenderer2D{ .shape = s.Shape{ .square = .{ .side = 200 } } };
+    var square = r.ShapeRenderer2D{ .shape = s.square(200) };
+
+    var last_time = c.SDL_GetPerformanceCounter();
+    const perf_frequency = @as(f64, @floatFromInt(c.SDL_GetPerformanceFrequency()));
+    var running = true;
 
     // Simple event loop
-    var running = true;
     while (running) {
+        const current_time = c.SDL_GetPerformanceCounter();
+        const delta = @as(f32, @floatCast(@as(f64, @floatFromInt(current_time - last_time)) / perf_frequency));
+        last_time = current_time;
+
+        std.debug.print("Delta: {d:.4}s FPS: {d:.1}\n", .{ delta, 1.0 / delta });
+
         // Clear the screen each frame (black background)
         _ = c.SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         _ = c.SDL_RenderClear(renderer);
@@ -44,8 +49,6 @@ pub fn main() !void {
         square.render(renderer);
 
         _ = c.SDL_RenderPresent(renderer);
-
-        std.debug.print("{any}\n", .{square});
 
         var event: c.SDL_Event = undefined;
         while (c.SDL_PollEvent(&event)) {
@@ -61,21 +64,23 @@ pub fn main() !void {
                 }
 
                 if (event.key.key == c.SDLK_D) {
-                    square.transform.x += 5;
+                    square.transform.x += delta * 300;
                 }
 
                 if (event.key.key == c.SDLK_A) {
-                    square.transform.x -= 5;
+                    square.transform.x -= delta * 300;
                 }
 
                 if (event.key.key == c.SDLK_W) {
-                    square.transform.y -= 5;
+                    square.transform.y -= delta * 300;
                 }
 
                 if (event.key.key == c.SDLK_S) {
-                    square.transform.y += 5;
+                    square.transform.y += delta * 300;
                 }
             }
         }
+
+        c.SDL_Delay(16); // ~60 FPS
     }
 }

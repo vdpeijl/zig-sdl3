@@ -5,11 +5,12 @@ const s = @import("shape.zig");
 
 pub fn ShapeRenderer(comptime ShapeType: type) type {
     return struct {
-        transform: t.Transform2D = .{},
+        transform: t.Transform2D = .{ .x = 0, .y = 0 },
         shape: ShapeType,
 
         pub fn render(self: @This(), renderer: *c.SDL_Renderer) void {
             if (ShapeType == s.Square) {
+                std.debug.print("square renderer called {}\n", .{self.transform});
                 const rect = c.SDL_FRect{
                     .x = self.transform.x,
                     .y = self.transform.y,

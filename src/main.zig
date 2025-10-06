@@ -2,7 +2,7 @@ const std = @import("std");
 const sdl = @import("util/sdl.zig");
 const c = @import("lib/c.zig").c;
 const s = @import("structs/shape.zig");
-const StartScene = @import("scenes/start.zig").StartScene;
+const SceneManager = @import("structs/scene-manager.zig").SceneManager;
 
 pub fn main() !void {
     if (!c.SDL_Init(c.SDL_INIT_VIDEO)) {
@@ -28,7 +28,7 @@ pub fn main() !void {
     };
     defer c.SDL_DestroyRenderer(renderer);
 
-    var start_scene = try StartScene.init();
+    var scene_manager = try SceneManager.init();
 
     var last_time = c.SDL_GetPerformanceCounter();
     const perf_frequency = @as(f64, @floatFromInt(c.SDL_GetPerformanceFrequency()));
@@ -42,8 +42,8 @@ pub fn main() !void {
 
         std.debug.print("Delta: {d:.4}s FPS: {d:.1}\n", .{ delta, 1.0 / delta });
 
-        start_scene.update(delta);
-        start_scene.render(renderer);
+        scene_manager.update(delta);
+        scene_manager.render(renderer);
 
         _ = c.SDL_RenderPresent(renderer);
 
@@ -53,7 +53,5 @@ pub fn main() !void {
                 running = false;
             }
         }
-
-        c.SDL_Delay(16); // ~60 FPS
     }
 }

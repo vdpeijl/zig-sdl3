@@ -3,6 +3,7 @@ const sdl = @import("util/sdl.zig");
 const c = @import("lib/c.zig").c;
 const s = @import("structs/shape.zig");
 const SceneManager = @import("structs/scene-manager.zig").SceneManager;
+const Timer = @import("structs/timer.zig").Timer;
 
 pub fn main() !void {
     if (!c.SDL_Init(c.SDL_INIT_VIDEO)) {
@@ -29,18 +30,11 @@ pub fn main() !void {
     defer c.SDL_DestroyRenderer(renderer);
 
     var scene_manager = try SceneManager.init();
-
-    var last_time = c.SDL_GetPerformanceCounter();
-    const perf_frequency = @as(f64, @floatFromInt(c.SDL_GetPerformanceFrequency()));
+    var timer = Timer.init();
     var running = true;
 
-    // Simple event loop
     while (running) {
-        const current_time = c.SDL_GetPerformanceCounter();
-        const delta = @as(f32, @floatCast(@as(f64, @floatFromInt(current_time - last_time)) / perf_frequency));
-        last_time = current_time;
-
-        std.debug.print("Delta: {d:.4}s FPS: {d:.1}\n", .{ delta, 1.0 / delta });
+        const delta = timer.delta();
 
         scene_manager.update(delta);
         scene_manager.render(renderer);
@@ -55,5 +49,7 @@ pub fn main() !void {
 
             scene_manager.handleEvent(&event);
         }
+
+        std.debug.print("Delta: {d:.4}s FPS: {d:.1}\n", .{ delta, 1.0 / delta });
     }
 }

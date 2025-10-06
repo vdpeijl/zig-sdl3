@@ -15,9 +15,13 @@ pub const MenuScene = struct {
         };
     }
 
-    // pub fn update(self: *MenuScene, delta: f32) void {
-    //     self.square.transform.x += delta * 100;
-    // }
+    pub fn handleEvent(_: *MenuScene, event: *c.SDL_Event) void {
+        if (event.type == c.SDL_EVENT_MOUSE_BUTTON_DOWN) {
+            const x = event.button.x;
+            const y = event.button.y;
+            std.debug.print("Left click at ({d}, {d})\n", .{ x, y });
+        }
+    }
 
     pub fn render(self: *MenuScene, renderer: *c.SDL_Renderer) void {
         // Clear the screen each frame (purple background)

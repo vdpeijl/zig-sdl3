@@ -52,6 +52,8 @@ pub fn main() !void {
             if (event.type == c.SDL_EVENT_QUIT) {
                 running = false;
             }
+
+            scene_manager.handleEvent(&event);
         }
     }
 }
